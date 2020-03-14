@@ -8,8 +8,8 @@ The mutual information is computed using Gao's neighbours approach.
 This is a simple function that take N-by-Mx features with N-by-My labels and returns a Mx-by-My pd.DataFrame containing all features/labels mi. 
 
 The next focus would be: 
-	- Perform feature-selection by minimising feature-redundancies and maximizing mutual-information.
-	- Implement partial-mutual-information / conditional-mutual-information
+- Perform feature-selection by minimising feature-redundancies and maximizing mutual-information.
+- Implement partial-mutual-information / conditional-mutual-information
 
 
 References: 
