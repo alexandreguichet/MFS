@@ -3,7 +3,7 @@ Modular Feature Selection (Mutual-Information-based Feature Selection)
 
 This toolbox proposes mutual-information-based feature-selection modules to use in any machine-learning/deep-learning applications. 
 
-The mutual information is computed using Gao's neighbours approach. 
+The mutual information is computed using Kraskov/Ross/Gao's k-neighbours approach. 
 
 This is a simple function that take N-by-Mx features with N-by-My labels and returns a Mx-by-My pd.DataFrame containing all features/labels mi. 
 
