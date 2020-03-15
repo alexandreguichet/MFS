@@ -53,8 +53,8 @@ def mutual_information(feature, target, n_neighbors = 3, ordered = True, downsam
         _, mx = feature.shape
         _, my = target.shape
     except:
-        mx = feature.shape #Cases: pd.Series (1D) and 1D nump.arrays
-        my = target.shape #Cases: pd.Series (1D) and 1D nump.arrays
+        mx, = feature.shape #Cases: pd.Series (1D) and 1D nump.arrays
+        my, = target.shape #Cases: pd.Series (1D) and 1D nump.arrays
     
     mi = np.zeros([mx, my])
     
@@ -76,7 +76,7 @@ def mutual_information(feature, target, n_neighbors = 3, ordered = True, downsam
     mi = pd.DataFrame(mi, columns = mi_labels, index = mi_features)
     
     if ordered:
-        mi.sort_values(by = mi_babels[0])
+        mi.sort_values(by = mi_labels[0])
     
     return mi
 
@@ -101,9 +101,11 @@ def _estimate_mi(X, y, n_neighbors = 3, downsampling = False, pbar = None):
     for i in range(n_features):
         x = X[:, i]
         if downsampling:
-            missing_aray = np.isnan(np.hstack([x, y])) #TODO: Check if it returns 1D-array of booleans
-
-            [x, yi] = resample(x, y)
+            try:
+                missing_aray = np.isnan(np.hstack([x, y])) #TODO: Check if it returns 1D-array of booleans
+                [x, yi] = resample(x, y, missing_aray)
+            except:
+                yi = y              
         else:
             yi = y
             
@@ -155,7 +157,7 @@ def resample(X, y, missing_array):
             steps = int(np.floor(nny/resample_size)) #TODO: Check if it works
             X = X[0::steps]
             y = y[0::steps]
-       elif nnx < nny:
+        elif nnx < nny:
             steps = int(np.floor(nnx/resample_size)) #TODO: Check if it works
             X = X[0::steps]
             y = y[0::steps]         
