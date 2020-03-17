@@ -11,6 +11,7 @@ from mutual_information import mutual_information
 
 import numpy as np 
 import pandas as pd
+import time
 
 mifs = MIFS()
 mifs.load_pickle("titanic_train.pkl")
@@ -23,8 +24,11 @@ features[cat_columns] = features[cat_columns].astype('category').apply(lambda x:
     
 labels = mifs.df["Survived"].to_frame()
 
+start = time.time()
 mi = mutual_information(features, labels, downsample = True)
+print(time.time() - start)
 
+start = time.time()
 from sklearn.feature_selection import mutual_info_regression
 aa = dict()
 for i in features.columns:
@@ -37,7 +41,8 @@ for i in features.columns:
     y = y[np.invert(missing_array).reshape(1, -1)]
 
     aa[i] = mutual_info_regression(x.reshape(-1, 1), y.reshape(-1, 1))
- 
+print(time.time() - start)
+
 #Check what is the value of 1-to-1 ratio    
-bb = mutual_information(features["Fare"], features["Fare"])
+bb = mutual_information(features["Fare"].values, features["Fare"].values)
 cc = mutual_info_regression(features["Fare"].values.reshape(-1, 1), features["Fare"].values.reshape(-1, 1))
