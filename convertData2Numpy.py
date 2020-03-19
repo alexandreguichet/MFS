@@ -13,13 +13,13 @@ def _is_pd_series(data, column_name):
     mx = 1
     my = data.size
     column_names = [data.name]
-    np_data = data.values
+    np_data = np.array(data.values, ndmin=2).T
     return mx, my, column_names, np_data
 
 def _is_pd_dataframe(data, column_name):
     my, mx = data.shape
     column_names = data.columns
-    np_data = data.values
+    np_data = np.array(data.values, ndmin=2).T
     return mx, my, column_names, np_data
 
 def _is_numpy_array(data, column_name):
