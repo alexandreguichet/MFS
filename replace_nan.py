@@ -18,33 +18,41 @@ import numpy as np
 import pandas as pd
 
 def __remove_all_nan(array):
-    nan_indexes = np.where(array == np.nan)
+    # Check if data is in string format
+    if pd.api.types.is_string_dtype (array):
+        nan_indexes = np.argwhere(array == 'nan')
+    else:
+        nan_indexes = np.argwhere(np.isnan(array))[:,0]
     trimmed_array = np.delete(array, nan_indexes)
     return trimmed_array, nan_indexes
 
 def __replace_by_mean(array):
-    nan_indexes = np.where(array == np.nan)
-    array_mean = np.mean(array)
-    np.put(array, nan_indexes, array_mean)
+    array_mean = np.nanmean(array)
+    np.nan_to_num(array, nan=array_mean)
     return array, [None]
     
 def __replace_by_median(array):
-    nan_indexes = np.where(array == np.nan)
-    array_median = np.median(array)
-    np.put(array, nan_indexes, array_median)
+    array_median = np.nanmedian(array)
+    np.nan_to_num(array, nan=array_median)
     return array, [None]
 
 def __make_into_new_class(array):
-    nan_indexes = np.where(array == np.nan)
     
-    # Convert data to int categorical (in case its not already done)
-    # and find next integer
-    codes, _ = pd.factorize(array)
-    sorted_codes = np.sort(codes.unique)
-    new_class_id = sorted_codes[-1] + 1
+    # Check if data is in string format
+    if isinstance(array, object):
+        #Convert to int categorical
+        length_array = np.size(array)
+        codes, uniques = pd.factorize(array.reshape(length_array)) # nan are interpreted as a string
     
-    # Replace all Nan by new class ID
-    np.put(array, nan_indexes, new_class_id)
+    # Data is in numeral format
+    else:
+        length_array = np.size(array)
+        codes, uniques = pd.factorize(array.reshape(length_array)) # all nan / none will be set to -1
+        sorted_codes = np.sort(np.unique(codes))
+        new_class_id = sorted_codes[-1] + 1
+        codes[codes == -1] = new_class_id
+        
+    array = codes
     return array, [None]
 
 def __auto_handle_nan(array, ratio_unique_length_max, ratio_nan_length_max, 
@@ -126,3 +134,4 @@ def replace_nan_in_vector(array, mode="auto", ratio_unique_length_max = 0.2,
         raise Exception('The mode given as argument is invalid. Only remove, mean, median, newclass & auto are accepted. Mode given: {}'.format(mode))
     
     return new_values, indexes_removed
+
