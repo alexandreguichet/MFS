@@ -181,3 +181,39 @@ def resample(X, y, missing_array):
             X = X[0::steps]
             y = y[0::steps]         
     return X, y
+
+def convertData2Numpy(data):
+    def isPdSeries(data):
+        mx = 1
+        my = data.size
+        column_names = [data.name]
+        np_data = data.values
+        return mx, my, column_names, np_data
+    
+    def isPdDataFrame(data):
+        my, mx = data.shape
+        column_names = data.columns
+        np_data = data.values
+        return mx, my, column_names, np_data
+    
+    def isNumpyArray(data):
+        try: 
+            my, mx = data.shape
+            return mx, my
+        except ValueError:
+            mx = 1
+            print(str(ValueError))
+        column_names = ["Feature_" + str(i) for i in range(mx)]
+        np_data = data
+        return mx, my, column_names, np_data
+    
+    if isinstance(data, pd.Series):
+        return isPdSeries(data)
+    elif isinstance(data, pd.DataFrame):
+        return isPdDataFrame(data)
+    elif isinstance(data, np.ndarray):
+        return isNumpyArray(data)
+    else:
+        raise ValueError("The input data type is neither: pd.Series or pd.DataFrame or np.ndarray")
+            
+    
