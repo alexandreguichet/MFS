@@ -46,3 +46,11 @@ print(time.time() - start)
 #Check what is the value of 1-to-1 ratio    
 bb = mutual_information(features["Fare"].values, features["Fare"].values)
 cc = mutual_info_regression(features["Fare"].values.reshape(-1, 1), features["Fare"].values.reshape(-1, 1))
+
+#Feature Selection
+mifs = MIFS()
+mifs.load_pickle("titanic_train.pkl")
+mifs.convert_categorical()
+mifs.dropnan()
+mifs.separate_labels(["Survived"])
+results = mifs.select_n_features(n = 1)
