@@ -11,6 +11,8 @@ import numpy as np
 
 import time
 import warnings
+from tools.load import load_file
+
 from mutual_information import mutual_information as mi
 
 class MIFS():
@@ -27,12 +29,10 @@ class MIFS():
         self._feature_selector = self._max_mi_min_redundancy
         self._lambda = 1
         
-    def read_data(self, path, _type):
-        if _type == "pickle":
-            return pd.read_pickled(path)
         
-    def load_pickle(self, path):
-        self.df= pd.read_pickle(path)
+        
+    def load_file(self, path):
+        self.df= load_file(path)
                
     def separate_labels(self, labels = list()):
        self.labels = self.df[labels].copy()
@@ -42,22 +42,25 @@ class MIFS():
        """
        Select the k-best features for each labels. 
        """ 
-       joint_data = np.hstack([self.labels, self.features])
+       if isinstance(self.labels, pd.DataFrame):
+           joint_data = self.labels.join(self.features)     
+       else:
+           joint_data = np.hstack([self.labels, self.features])
           
        mi_time = time.time()
-       self.mifs["labels"] = mi(joint_data, self.labels, kwargs)
+       self.mifs["labels"] = mi(joint_data, self.labels, **kwargs)
        self.mi_time = time.time() - mi_time
        
-       df_temps = mi["labels"].drop(index = mi["labels"].columns)
+       df_temps = self.mifs["labels"].drop(index = self.mifs["labels"].columns)
        
        temp = pd.DataFrame()
        
        for c in df_temps:
-           temp = temp.append(mi["threshold"].nlargest(n = n, columns = c)).drop_duplicates()
+           temp = temp.append(df_temps.nlargest(n = n, columns = c)).drop_duplicates()
        
        self.mifs["threshold"] = temp
             
-       return self._select_features(kwargs)
+       return self._select_features(**kwargs)
 
     
     def select_features_threshold(self, n = 5):
@@ -82,7 +85,7 @@ class MIFS():
         
         joint_data = self.labels.join(self.features[candidate_names])
         
-        self.mifs["all"] = mi(joint_data, joint_data, kwargs)
+        self.mifs["all"] = mi(joint_data, joint_data, **kwargs)
         self.mifs["all"] = self.mifs["all"]/self.mifs["all"].max(axis = 0)
         
         return self.feature_selector()
@@ -116,14 +119,10 @@ class MIFS():
         self.mifs["selected"] = self.mifs["selected"].sort_values(self.mifs["selected"].columns[0], ascending = False)
         return self.mifs  
     
-    @property         
-    def cost_function(self):
-        return self._cost_function()
-    
-    @cost_function.setter
-    def cost_function(self, value):
-        self._cost_function = value     
-    
+    def cost_function(self, *args):
+        print("here with")
+        return self._cost_function(*args)
+        
     @property
     def Lambda(self):
         return self._lambda

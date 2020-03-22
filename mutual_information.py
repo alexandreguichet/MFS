@@ -9,11 +9,13 @@ import warnings
 
 import numpy as np
 import pandas as pd
- 
+
 from tqdm import tqdm
 from sklearn.preprocessing import scale
 from sklearn.neighbors import NearestNeighbors
 from scipy.special import digamma
+
+from tools.convert_categorical import convert_cat
 
 def mutual_information(feature, target, n_neighbors = 3, ordered = True, downsample = False):
     """
@@ -34,7 +36,7 @@ def mutual_information(feature, target, n_neighbors = 3, ordered = True, downsam
         'ordered' - default: True
             <bool>. If the return dataframe should be ordered in descending order for the first label
         
-        'downsampling' - default: False
+        'downsample' - default: False
             <bool>, Allow resampling of parameters when sample size is huge. 
             Also remove nan's and make features/target of the same length in case nx != ny
             Downsample up to 500 samples/parameters if True
@@ -46,8 +48,7 @@ def mutual_information(feature, target, n_neighbors = 3, ordered = True, downsam
                 https://arxiv.org/abs/cond-mat/0305641
             	- W. Gao, S. Kannan, S. Oh, P. Viswanath, "Estimating Mutual Information for discrete-continuous mixtures". arXiv preprint, arXiv:1709.06212, 2017.
                 https://arxiv.org/pdf/1709.06212.pdf
-    """   
-    
+    """       
     if isinstance(feature, pd.Series):
         mx = 1
         mi_features = [feature.name]
@@ -137,11 +138,16 @@ def _compute_mi(x, y, n_neighbors):
     y = y.reshape((-1, 1))
     xy = np.hstack([x,y])
     
-    nn = NearestNeighbors(metric = 'chebyshev', n_neighbors = n_neighbors)
-    
+    nn = NearestNeighbors(metric = 'chebyshev', n_neighbors = n_neighbors)    
+    if len(x) == 0 or len(y) == 0:
+        return 0
     nn.fit(xy)
-        
-    radius = nn.kneighbors()[0]
+    
+    try: #Added 21.04.2020, to discuss with Adrien   
+        radius = nn.kneighbors()[0]
+    except ValueError:
+        return 0
+
     radius = np.nextafter(radius[:, -1], 0)
     
     nx = np.sum((np.repeat(x, n_samples, axis = 1) > (np.transpose(x) - radius)) & (np.repeat(x, 
@@ -158,7 +164,7 @@ def resample(X, y, missing_array):
     
     X = X[np.invert(missing_array)]
     y = y[np.invert(missing_array)]
-    
+
     nnx = X.shape[0]
     nny = y.shape[0]
     
@@ -181,39 +187,5 @@ def resample(X, y, missing_array):
             X = X[0::steps]
             y = y[0::steps]         
     return X, y
-
-def convertData2Numpy(data):
-    def isPdSeries(data):
-        mx = 1
-        my = data.size
-        column_names = [data.name]
-        np_data = data.values
-        return mx, my, column_names, np_data
-    
-    def isPdDataFrame(data):
-        my, mx = data.shape
-        column_names = data.columns
-        np_data = data.values
-        return mx, my, column_names, np_data
-    
-    def isNumpyArray(data):
-        try: 
-            my, mx = data.shape
-            return mx, my
-        except ValueError:
-            mx = 1
-            print(str(ValueError))
-        column_names = ["Feature_" + str(i) for i in range(mx)]
-        np_data = data
-        return mx, my, column_names, np_data
-    
-    if isinstance(data, pd.Series):
-        return isPdSeries(data)
-    elif isinstance(data, pd.DataFrame):
-        return isPdDataFrame(data)
-    elif isinstance(data, np.ndarray):
-        return isNumpyArray(data)
-    else:
-        raise ValueError("The input data type is neither: pd.Series or pd.DataFrame or np.ndarray")
             
     
