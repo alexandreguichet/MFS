@@ -17,7 +17,7 @@ def __is_pd_series(data):
 def __is_pd_dataframe(data):
     my, mx = data.shape
     column_names = data.columns
-    np_data = np.array(data[column_names[0]].values, ndmin=2).T
+    np_data = np.array(data.values, ndmin=2)
     return mx, my, column_names, np_data
 
 def __is_numpy_array(data, column_name):

@@ -6,6 +6,7 @@
 import time
 import os
 import warnings
+import copy
 
 import numpy as np
 import pandas as pd
@@ -14,6 +15,9 @@ from tqdm import tqdm
 from sklearn.preprocessing import scale
 from sklearn.neighbors import NearestNeighbors
 from scipy.special import digamma
+
+#custom modules
+import convert_data_2_numpy.convert_data_2_numpy as cd2np
 
 from tools.convert_categorical import convert_cat
 
@@ -49,35 +53,8 @@ def mutual_information(feature, target, n_neighbors = 3, ordered = True, downsam
             	- W. Gao, S. Kannan, S. Oh, P. Viswanath, "Estimating Mutual Information for discrete-continuous mixtures". arXiv preprint, arXiv:1709.06212, 2017.
                 https://arxiv.org/pdf/1709.06212.pdf
     """       
-    if isinstance(feature, pd.Series):
-        mx = 1
-        mi_features = [feature.name]
-        feature = feature.values
-    elif isinstance(feature, (np.ndarray, np.generic)):
-        try: 
-            _, mx = feature.shape
-        except ValueError:
-            mx = 1
-        mi_features = ["Feature_" + str(i) for i in range(mx)]
-    elif isinstance(feature, pd.DataFrame):
-        _, mx = feature.shape
-        mi_features = feature.columns
-        feature = feature.values
-        
-    if isinstance(target, pd.Series):
-        my = 1
-        mi_labels = [target.name]
-        target = target.values
-    elif isinstance(target, (np.ndarray, np.generic)):
-        try: 
-            _, my = target.shape
-        except ValueError:
-            my = 1
-        mi_labels = ["Label_" + str(i) for i in range(my)]
-    elif isinstance(target, pd.DataFrame):
-        _, my = target.shape
-        mi_labels = target.columns
-        target = target.values
+    mx, _, mi_features, feature = cd2np.convert_data_2_numpy(feature, column_name = "feature")
+    my, _, mi_labels, target = cd2np.convert_data_2_numpy(target, column_name = "label")
             
     mi = np.zeros([mx, my])
              
