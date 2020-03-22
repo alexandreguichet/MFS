@@ -113,5 +113,3 @@ def test_convert_data_2_numpy__numpy():
     assert (ref_my == t_my)
     assert (ref_column_names == t_column_names[0])
     assert (ref_np_data == t_np_data).all()
-    
-test_convert_data_2_numpy__dataframe()

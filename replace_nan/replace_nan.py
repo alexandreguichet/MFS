@@ -23,8 +23,10 @@ def __remove_all_nan(array):
         nan_indexes = np.argwhere(array == 'nan')
     else:
         nan_indexes = np.argwhere(np.isnan(array))[:,0]
-    trimmed_array = np.delete(array, nan_indexes)
-    return trimmed_array, nan_indexes
+    
+    # For multivariable MI its better to remove the Nans outside this module    
+    # trimmed_array = np.delete(array, nan_indexes)
+    return array, nan_indexes
 
 def __replace_by_mean(array):
     array_mean = np.nanmean(array)
@@ -119,7 +121,7 @@ def replace_nan_in_column(array, mode="auto", ratio_unique_length_max = 0.2,
     new_values : np.ndarray (m,1)
         DESCRIPTION. Processed Data
 
-    indexes_removed : np.ndarray (k,1)
+    indexes_removed : np.ndarray (1,k)
         DESCRIPTION. Indexes which were removed in the input array
     """
     if(array.shape[1] != 1):
