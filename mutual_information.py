@@ -6,6 +6,7 @@
 import time
 import os
 import warnings
+warnings.simplefilter(action='ignore', category=UserWarning)
 
 import numpy as np
 import pandas as pd
@@ -186,6 +187,4 @@ def resample(X, y, missing_array):
             steps = int(np.floor(nnx/resample_size)) #TODO: Check if it works
             X = X[0::steps]
             y = y[0::steps]         
-    return X, y
-            
-    
+    return X, y       
