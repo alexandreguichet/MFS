@@ -79,9 +79,9 @@ class MIFS():
         time_appx = (len(candidate_names) + my)**2 * self.mi_time/my/mx
         
         if time_appx >= 3600:
-            warnings.warn("The feature selection for {:d} feature will take approximately {:.2g}hours to compute. \n".format(len(candidate_names), time_appx/3600), Warning)
+            warnings.warn("The feature selection for {:d} feature will take approximately {:.2g}hour to compute. \n".format(len(candidate_names), time_appx/3600), Warning)
         elif time_appx >= 60:
-            warnings.warn("The feature selection for {:d} feature will take approximately {:.2g}mins to compute. \n".format(len(candidate_names), time_appx/60), Warning)
+            warnings.warn("The feature selection for {:d} feature will take approximately {:.2g}min to compute. \n".format(len(candidate_names), time_appx/60), Warning)
         
         joint_data = self.labels.join(self.features[candidate_names])
         
@@ -112,7 +112,7 @@ class MIFS():
                 elif Cx > Cz: 
                     self.mifs["selected"] = self.mifs["selected"].drop(i[0])
                 else: 
-                    print("that should never happen as mutual information is not symetric, you are lucky! Well done!")
+                    print("Oh wow, two of your features have the exact same value (mi(X,Y) == mi (Y, X)). This is extremely rare as mutual information is not symetric (mi(X, Y) != mi(Y, X)), you are lucky! Well done!")
             except KeyError:
                 pass #The Value was already removed
         
@@ -120,7 +120,6 @@ class MIFS():
         return self.mifs  
     
     def cost_function(self, *args):
-        print("here with")
         return self._cost_function(*args)
         
     @property
