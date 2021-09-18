@@ -11,6 +11,9 @@ The next focus would be:
 - Perform feature-selection by minimising feature-redundancies and maximizing mutual-information.
 - Implement partial-mutual-information / conditional-mutual-information
 
+Run script: 
+- check mifs_example.py for examples on hwo to use the framework for different tasks
+- check mifs.py and mutual_information.py's documentation on all parameter uses and possibilities
 
 References: 
 
