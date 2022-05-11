@@ -28,8 +28,7 @@ labels = mifs.df["Survived"].to_frame()
 cat_columns = features.select_dtypes(['category', 'object']).columns
 features[cat_columns] = features[cat_columns].astype('category').apply(lambda x: x.cat.codes)
 
-#Calculate mutual information
-#results is a dictionary!
+#Calculate mutual information, with results as a dictionary!
 # check results['selected'] for the final answer: unique features with most redundancies removed (final value is normalized)
 # check results['threshold'] for all features above a threshold (n = 50 here), redundancies are still present
 # check results['all'] for the mutual information matrix of the 50 selected features (that are above a threshold)
