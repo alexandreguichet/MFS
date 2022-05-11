@@ -29,8 +29,12 @@ cat_columns = features.select_dtypes(['category', 'object']).columns
 features[cat_columns] = features[cat_columns].astype('category').apply(lambda x: x.cat.codes)
 
 #Calculate mutual information
-mi = mutual_information(features, labels, downsample = True)
-#mi returns a dictionary containing the result along with the intermediate steps of the process.
+#results is a dictionary!
+# check results['selected'] for the final answer: unique features with most redundancies removed (final value is normalized)
+# check results['threshold'] for all features above a threshold (n = 50 here), redundancies are still present
+# check results['all'] for the mutual information matrix of the 50 selected features (that are above a threshold)
+# check results['labels'] for the mutual information value of all features
+results = mifs.select_n_features(n = 50, downsample = True) 
 ```
 
 References: 
