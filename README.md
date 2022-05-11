@@ -15,6 +15,24 @@ Run script:
 - check mifs_example.py for examples on hwo to use the framework for different tasks
 - check mifs.py and mutual_information.py's documentation on all parameter uses and possibilities
 
+Usage Example: 
+```python
+mifs = MIFS()
+mifs.load_file("datasets\\IPODataFull.csv")
+
+# extract features/labels
+features = mifs.df.drop(columns = ["Survived"])
+labels = mifs.df["Survived"].to_frame()
+
+#Convert categorical
+cat_columns = features.select_dtypes(['category', 'object']).columns
+features[cat_columns] = features[cat_columns].astype('category').apply(lambda x: x.cat.codes)
+
+#Calculate mutual information
+mi = mutual_information(features, labels, downsample = True)
+#mi returns a dictionary containing the result along with the intermediate steps of the process.
+```
+
 References: 
 
 - B.C. Ross, "Mutual Information between Discrete and Continuous Data Sets". PloS ONE 9(2), 2014. 
